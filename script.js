@@ -39,7 +39,14 @@ const renderCountry = function (data, className = '') {
         </article>`;
 
     countriesContainer.insertAdjacentHTML('beforeend', html);
-    countriesContainer.style.opacity = 1;
+    // countriesContainer.style.opacity = 1;
+};
+
+//********************************//
+
+const renderError = function (msg) {
+    countriesContainer.insertAdjacentText('beforeend', msg);
+    // countriesContainer.style.opacity = 1;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -84,7 +91,7 @@ const getCountryAndNeighbour = function (country) {
     });
 };
 
-// getCountryAndNeighbour('usa');
+// getCountryAndNeighbour('spain');
 
 //////////////////////////////////////////////////////////////////////
 
@@ -108,6 +115,8 @@ const getCountryData2 = function (country) {
         .then(data => renderCountry(data[0]));
 };
 
+//********************************//
+
 // Get country data and neighbour
 const getCountryData = function (country) {
     // Country 1
@@ -122,8 +131,17 @@ const getCountryData = function (country) {
             // Country 2
             return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
         }) // Return a promise
-        .then(response => response.json())
-        .then(data => renderCountry(data[0], 'neighbour')); // FIX BUG
+        .then(response => response.json()) // When the promise is fullyfield
+        .then(data => renderCountry(data[0], 'neighbour')) // FIX BUG
+        .catch(err => {
+            console.log(`${err} 🎆🎆🎆`);
+            renderError(`Something went wrong 🎆🎆 ${err.message}. Try again!`);
+        }) // When the promise is rejected
+        .finally(() => {
+            countriesContainer.style.opacity = 1;
+        }); // Will be called always
 };
 
-getCountryData('portugal');
+btn.addEventListener('click', function () {
+    getCountryData('serbia');
+});
