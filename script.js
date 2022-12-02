@@ -3,7 +3,7 @@
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
-///////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 const renderCountry = function (data, className = '') {
     // FIX BUG
@@ -18,29 +18,31 @@ const renderCountry = function (data, className = '') {
 
     // prettier-ignore
     const html = `
-    <article class="country ${className}">
-        <img class="country__img" src="${data.flags.png}" />
-        <div class="country__data">
-            <h3 class="country__name">${data.name.common}</h3>
-            <h4 class="country__region">${data.region}</h4>
-            <p class="country__row">
-                <span>👫</span>
-                ${(+data.population / 1000000).toFixed(1)}
-            </p>
-            <p class="country__row">
-                <span>🗣️</span>
-                ${[languagesArray][0]}
-            </p>
-            <p class="country__row">
-                <span>💰</span>
-                ${currenciesArray[0].name}
-            </p>
-        </div>
-    </article>`;
+        <article class="country ${className}">
+            <img class="country__img" src="${data.flags.png}" />
+            <div class="country__data">
+                <h3 class="country__name">${data.name.common}</h3>
+                <h4 class="country__region">${data.region}</h4>
+                <p class="country__row">
+                    <span>👫</span>
+                    ${(+data.population / 1000000).toFixed(1)}
+                </p>
+                <p class="country__row">
+                    <span>🗣️</span>
+                    ${[languagesArray][0]}
+                </p>
+                <p class="country__row">
+                    <span>💰</span>
+                    ${currenciesArray[0].name}
+                </p>
+            </div>
+        </article>`;
 
     countriesContainer.insertAdjacentHTML('beforeend', html);
     countriesContainer.style.opacity = 1;
 };
+
+//////////////////////////////////////////////////////////////////////
 
 // AJAX calls
 // XML http request function
@@ -54,7 +56,7 @@ const getCountryAndNeighbour = function (country) {
         // JSON (string) to javascript object
         // We got an array with one element (one object)
         // const data = JSON.parse(this.responseText)[0];
-        const [data] = JSON.parse(this.responseText);
+        const [data] = JSON.parse(this.responseText); // FIX BUG
         console.log(data);
 
         // Render country 1
@@ -82,4 +84,28 @@ const getCountryAndNeighbour = function (country) {
     });
 };
 
-getCountryAndNeighbour('usa');
+// getCountryAndNeighbour('usa');
+
+//////////////////////////////////////////////////////////////////////
+
+// Promises and the fetch API
+const getCountryData1 = function (country) {
+    fetch(`https://restcountries.com/v3.1/name/${country}`) // A promise
+        .then(function (response) {
+            console.log(response);
+            return response.json(); // To red data from the response
+        }) // Asynchronus function will return a new promise
+        .then(function (data) {
+            console.log(data);
+            renderCountry(data[0]);
+        });
+};
+
+// Simplified version of code
+const getCountryData = function (country) {
+    fetch(`https://restcountries.com/v3.1/name/${country}`)
+        .then(response => response.json())
+        .then(data => renderCountry(data[0]));
+};
+
+getCountryData('portugal');
