@@ -102,10 +102,28 @@ const getCountryData1 = function (country) {
 };
 
 // Simplified version of code
-const getCountryData = function (country) {
+const getCountryData2 = function (country) {
     fetch(`https://restcountries.com/v3.1/name/${country}`)
         .then(response => response.json())
         .then(data => renderCountry(data[0]));
+};
+
+// Get country data and neighbour
+const getCountryData = function (country) {
+    // Country 1
+    fetch(`https://restcountries.com/v3.1/name/${country}`)
+        .then(response => response.json())
+        .then(data => {
+            renderCountry(data[0]);
+            const neighbour = data[0].borders[0];
+
+            if (!neighbour) return;
+
+            // Country 2
+            return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+        }) // Return a promise
+        .then(response => response.json())
+        .then(data => renderCountry(data[0], 'neighbour')); // FIX BUG
 };
 
 getCountryData('portugal');
