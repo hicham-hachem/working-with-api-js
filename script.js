@@ -29,7 +29,7 @@ const renderCountry = function (data, className = '') {
                 </p>
                 <p class="country__row">
                     <span>🗣️</span>
-                    ${[languagesArray][0]}
+                    ${languagesArray[0]}
                 </p>
                 <p class="country__row">
                     <span>💰</span>
@@ -117,24 +117,42 @@ const getCountryData2 = function (country) {
 
 //********************************//
 
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+    return fetch(url).then(response => {
+        if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+        return response.json();
+    });
+};
+
 // Get country data and neighbour
 const getCountryData = function (country) {
     // Country 1
-    fetch(`https://restcountries.com/v3.1/name/${country}`)
-        .then(response => response.json())
+    // fetch(`https://restcountries.com/v3.1/name/${country}`)
+    //     .then(response => {
+    //         if (!response.ok)
+    //             throw new Error(`Country not found (${response.status})`);
+    //         return response.json();
+    //     })
+    getJSON(
+        `https://restcountries.com/v3.1/name/${country}`,
+        'Country not found'
+    )
         .then(data => {
+            console.log(data[0]);
             renderCountry(data[0]);
-            const neighbour = data[0].borders[0];
 
-            if (!neighbour) return;
+            const neighbour = data[0].borders; // FIX BUG
 
+            if (!neighbour) throw new Error('No neighbour found!');
             // Country 2
-            return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
-        }) // Return a promise
-        .then(response => response.json()) // When the promise is fullyfield
+            return getJSON(
+                `https://restcountries.com/v3.1/alpha/${neighbour}`,
+                'Country not found'
+            );
+        })
         .then(data => renderCountry(data[0], 'neighbour')) // FIX BUG
         .catch(err => {
-            console.log(`${err} 🎆🎆🎆`);
+            console.error(`${err} 🎆🎆🎆`);
             renderError(`Something went wrong 🎆🎆 ${err.message}. Try again!`);
         }) // When the promise is rejected
         .finally(() => {
@@ -142,6 +160,7 @@ const getCountryData = function (country) {
         }); // Will be called always
 };
 
-btn.addEventListener('click', function () {
-    getCountryData('serbia');
-});
+// btn.addEventListener('click', function () {
+//     getCountryData('australia');
+// });
+getCountryData('australia');
