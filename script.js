@@ -324,25 +324,34 @@ const getPosition3 = function () {
 };
 
 const whereAmI3 = async function (country) {
-    // Geolocation
-    const position = await getPosition();
-    const { latitude: lat, longitude: lng } = position.coords;
+    try {
+        // Geolocation
+        const position = await getPosition();
+        const { latitude: lat, longitude: lng } = position.coords;
 
-    // Reverse geocoding
-    const geoResponse = await fetch(
-        `https://geocode.xyz/${lat},${lng}?geoit=json`
-    );
-    const geoData = await geoResponse.json();
-    console.log(geoData);
+        // Reverse geocoding
+        const geoResponse = await fetch(
+            `https://geocode.xyz/${lat},${lng}?geoit=json`
+        );
+        if (!geoResponse.ok) throw new Error('Problem getting location data');
 
-    // Country data
-    // fetch(`https://restcountries.com/v3.1/name/${country}`).then(response => console.log(response));
-    const response = await fetch(
-        `https://restcountries.com/v3.1/name/${geoData.country}`
-    );
-    const data = await response.json();
-    console.log(data);
-    renderCountry(data[0]);
+        const geoData = await geoResponse.json();
+        console.log(geoData);
+
+        // Country data
+        // fetch(`https://restcountries.com/v3.1/name/${country}`).then(response => console.log(response));
+        const response = await fetch(
+            `https://restcountries.com/v3.1/name/${geoData.country}`
+        );
+        if (!response.ok) throw new Error('Problem getting country');
+
+        const data = await response.json();
+        console.log(data);
+        renderCountry(data[0]);
+    } catch (err) {
+        console.error(`${err} 🎆`);
+        renderError(`🎆${err.message}`);
+    }
 };
 
 whereAmI3();
