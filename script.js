@@ -358,6 +358,7 @@ const whereAmI3 = async function (country) {
     }
 };
 
+/*
 console.log('1: Will get location');
 
 // whereAmI3()
@@ -376,3 +377,35 @@ console.log('1: Will get location');
 })();
 
 console.log('4: Will execute before 2');
+*/
+
+//////////////////////////////////////////////////////////////////////
+
+// Running Promises in Parallel
+const get3Countries = async function (c1, c2, c3) {
+    try {
+        // Running one after the other
+        // const [data1] = await getJSON(
+        //     `https://restcountries.com/v3.1/name/${c1}`
+        // );
+        // const [data2] = await getJSON(
+        //     `https://restcountries.com/v3.1/name/${c2}`
+        // );
+        // const [data3] = await getJSON(
+        //     `https://restcountries.com/v3.1/name/${c3}`
+        // );
+        // console.log([data1.capital[0], data2.capital[0], data3.capital[0]]);
+
+        // running all together
+        const data = await Promise.all([
+            getJSON(`https://restcountries.com/v3.1/name/${c1}`),
+            getJSON(`https://restcountries.com/v3.1/name/${c2}`),
+            getJSON(`https://restcountries.com/v3.1/name/${c3}`)
+        ]);
+        console.log(data.map(d => d[0].capital[0]));
+    } catch {
+        console.error(err);
+    }
+};
+
+get3Countries('portugal', 'canada', 'tanzania');
