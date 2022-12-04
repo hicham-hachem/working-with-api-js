@@ -336,7 +336,7 @@ const whereAmI3 = async function (country) {
         if (!geoResponse.ok) throw new Error('Problem getting location data');
 
         const geoData = await geoResponse.json();
-        console.log(geoData);
+        // console.log(geoData);
 
         // Country data
         // fetch(`https://restcountries.com/v3.1/name/${country}`).then(response => console.log(response));
@@ -346,12 +346,33 @@ const whereAmI3 = async function (country) {
         if (!response.ok) throw new Error('Problem getting country');
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         renderCountry(data[0]);
+        return `You are in ${geoData.city}, ${geoData.country}`;
     } catch (err) {
         console.error(`${err} 🎆`);
         renderError(`🎆${err.message}`);
+
+        // Reject promise returned from async function
+        throw err;
     }
 };
 
-whereAmI3();
+console.log('1: Will get location');
+
+// whereAmI3()
+//     .then(city => console.log(`2: ${city} 🎆`))
+//     .catch(err => console.error(`2 :${err.message} 🎆`))
+//     .finally(() => console.log('3: Finished getting location'));
+
+(async function () {
+    try {
+        const city = await whereAmI3();
+        console.log(`2: ${city} 🎆`);
+    } catch (err) {
+        console.error(`2 :${err.message} 🎆`);
+    }
+    console.log('3: Finished getting location');
+})();
+
+console.log('4: Will execute before 2');
