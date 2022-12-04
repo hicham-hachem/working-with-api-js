@@ -39,14 +39,14 @@ const renderCountry = function (data, className = '') {
         </article>`;
 
     countriesContainer.insertAdjacentHTML('beforeend', html);
-    // countriesContainer.style.opacity = 1;
+    countriesContainer.style.opacity = 1;
 };
 
 //********************************//
 
 const renderError = function (msg) {
     countriesContainer.insertAdjacentText('beforeend', msg);
-    // countriesContainer.style.opacity = 1;
+    countriesContainer.style.opacity = 1;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -240,10 +240,10 @@ const whereAmI2 = function () {
         });
 };
 
-btn.addEventListener('click', whereAmI2);
+// btn.addEventListener('click', whereAmI2);
 
 //////////////////////////////////////////////////////////////////////
-
+/*
 // Image loading
 const wait = function (seconds) {
     return new Promise(function (resolve) {
@@ -313,3 +313,36 @@ createImage('img/img-1.jpg')
     })
 
     .catch(err => console.error(err));
+*/
+//////////////////////////////////////////////////////////////////////
+
+// Consuming Promises with Async/Await
+const getPosition3 = function () {
+    return new Promise(function (resolve, reject) {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+};
+
+const whereAmI3 = async function (country) {
+    // Geolocation
+    const position = await getPosition();
+    const { latitude: lat, longitude: lng } = position.coords;
+
+    // Reverse geocoding
+    const geoResponse = await fetch(
+        `https://geocode.xyz/${lat},${lng}?geoit=json`
+    );
+    const geoData = await geoResponse.json();
+    console.log(geoData);
+
+    // Country data
+    // fetch(`https://restcountries.com/v3.1/name/${country}`).then(response => console.log(response));
+    const response = await fetch(
+        `https://restcountries.com/v3.1/name/${geoData.country}`
+    );
+    const data = await response.json();
+    console.log(data);
+    renderCountry(data[0]);
+};
+
+whereAmI3();
